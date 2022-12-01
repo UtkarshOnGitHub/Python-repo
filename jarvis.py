@@ -1,113 +1,50 @@
-# pip install pyaudio
-
-import pyttsx3 #pip install pyttsx3
-import speech_recognition as sr #pip install speechRecognition
-import datetime
-import wikipedia #pip install wikipedia
+import pyttsx3 
+import speech_recognition as sr
 import webbrowser
-import os
-import smtplib
 
-engine = pyttsx3.init('sapi5')
-voices = engine.getProperty('voices')
-# print(voices[1].id)
-engine.setProperty('voice', voices[1].id)
+myVoiceEngine = pyttsx3.init('sapi5')
+voices = myVoiceEngine.getProperty('voices')
+myVoiceEngine.setProperty('voice', voices[1].id)
 
 
 def speak(audio):
-    engine.say(audio)
-    engine.runAndWait()
+    myVoiceEngine.say(audio)
+    myVoiceEngine.runAndWait()  
 
-
-def wishMe():
-    hour = int(datetime.datetime.now().hour)
-    if hour>=0 and hour<12:
-        speak("Good Morning!")
-
-    elif hour>=12 and hour<18:
-        speak("Good Afternoon!")   
-
-    else:
-        speak("Good Evening!")  
-
-    speak("I am Jarvis Sir. Please tell me how may I help you")       
-
-def takeCommand():
-    #It takes microphone input from the user and returns string output
-
-    r = sr.Recognizer()
+def CommandInput():
+    recog = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
-        r.pause_threshold = 1
-        audio = r.listen(source)
+        recog.pause_threshold = 1
+        audio = recog.listen(source)
 
     try:
         print("Recognizing...")    
-        query = r.recognize_google(audio, language='en-in')
+        query = recog.recognize_google(audio, language='en-in')
         print(f"User said: {query}\n")
 
     except Exception as e:
-        # print(e)    
-        print("Say that again please...")  
+        print("Didn't Get It Sir")  
         return "None"
     return query
 
-def sendEmail(to, content):
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.ehlo()
-    server.starttls()
-    server.login('youremail@gmail.com', 'your-password')
-    server.sendmail('youremail@gmail.com', to, content)
-    server.close()
-
 if __name__ == "__main__":
-    wishMe()
-    while True:
-    # if 1:
-        query = takeCommand().lower()
-
-        # Logic for executing tasks based on query
-        if 'wikipedia' in query:
-            speak('Searching Wikipedia...')
-            query = query.replace("wikipedia", "")
-            results = wikipedia.summary(query, sentences=2)
-            speak("According to Wikipedia")
-            print(results)
-            speak(results)
-
-        elif 'open youtube' in query:
-            webbrowser.open("youtube.com")
-
-        elif 'open google' in query:
-            webbrowser.open("google.com")
-
-        elif 'open stackoverflow' in query:
-            webbrowser.open("stackoverflow.com")   
-
-
-        elif 'play music' in query:
-            music_dir = 'D:\\Non Critical\\songs\\Favorite Songs2'
-            songs = os.listdir(music_dir)
-            print(songs)    
-            os.startfile(os.path.join(music_dir, songs[0]))
-
-        elif 'the time' in query:
-            strTime = datetime.datetime.now().strftime("%H:%M:%S")    
-            speak(f"Sir, the time is {strTime}")
-
-        elif 'open code' in query:
-            codePath = "C:\\Users\\Haris\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
-            os.startfile(codePath)
-
-        elif 'email to harry' in query:
-            try:
-                speak("What should I say?")
-                content = takeCommand()
-                to = "harryyourEmail@gmail.com"    
-                sendEmail(to, content)
-                speak("Email has been sent!")
-            except Exception as e:
-                print(e)
-                speak("Sorry my friend harry bhai. I am not able to send this email")    
+    speak("Hello Sir! Iam Alice Here To Help You")
+    while 1:
+        query = CommandInput().lower()
+        if "wake up" in query:
+            speak("Yes Sir iam Awake. How Can I Help You Sir...") 
+        elif "talk to" in query:
+            myVoiceEngine.setProperty('voice', voices[0].id)
+            speak("Yes Sir iam Here. How Can I Help You Sir...")
+        elif "like" in query:
+             speak("Yes Sir! I like her. She is Kinda Cute")
+             myVoiceEngine.setProperty('voice', voices[1].id)
+             speak("Shutup Jarvis.. I Have A Boyfriend")
+             myVoiceEngine.setProperty('voice', voices[0].id)
+             speak("ooops!.... I think its time to play arjit singh sir")
+             webbrowser.open("https://www.youtube.com/watch?v=284Ov7ysmfA")
+        elif "Kira" in query:
+            speak("Kira.. Is A Professional Call Of Duty,valorant and BGMI Player. Kira is also Known As Noxious Beats AKA OOtkarsh")
         else:
             print("No query matched")
